@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import controller.Dao.ParquesDao;
+import controller.Dao.HotelesDao;
 import controller.tda.list.LinkedList;
 import controller.tda.list.ListEmptyException;
 import models.Hoteles;
@@ -24,7 +24,7 @@ public abstract class graph {
     // Ruta para guardar el archivo
     public static String filePath = "data/";
 
-    private Map<Integer, Parques> vertexModels = new HashMap<>();
+    private Map<Integer, Hoteles> vertexModels = new HashMap<>();
 
     // Métodos abstractos
     public abstract Integer nro_vertices();
@@ -99,12 +99,12 @@ public abstract class graph {
     }
 
     public void cargarModelosDesdeDao() throws  ListEmptyException {
-    ParquesDao parquesDao = new ParquesDao();
-    LinkedList<Parques> parquesList = parquesDao.getListAll();
+    HotelesDao hotelesDao = new HotelesDao();
+    LinkedList<Hoteles> hotelesList = hotelesDao.getListAll();
 
-    for (int i = 0; i < parquesList.getSize(); i++) {
-        Parques parque = parquesList.get(i);
-        vertexModels.put(parque.getidParques(), parque);
+    for (int i = 0; i < hotelesList.getSize(); i++) {
+        Hoteles hotel = hotelesList.get(i);
+        vertexModels.put(hotel.getidHoteles(), hotel);
     }
 }
 
@@ -124,7 +124,7 @@ public abstract class graph {
                 Integer labelId = vertexObject.get("labelId").getAsInt();
     
                 // Obtener el modelo ya existente en lugar de crear uno nuevo
-                Parques model = vertexModels.get(labelId);
+                Hoteles model = vertexModels.get(labelId);
     
                 if (model == null) {
                     continue; // Si no existe, pasar al siguiente vértice
@@ -144,8 +144,8 @@ public abstract class graph {
                     Integer to = destinationObject.get("to").getAsInt();
     
                     // Obtener los modelos correspondientes a los vértices 'from' y 'to'
-                    Parques modelFrom = vertexModels.get(from);
-                    Parques modelTo = vertexModels.get(to);
+                    Hoteles modelFrom = vertexModels.get(from);
+                    Hoteles modelTo = vertexModels.get(to);
     
                     if (modelFrom == null || modelTo == null) {
                     } else {
@@ -176,7 +176,7 @@ public abstract class graph {
     // Primero, cargamos el grafo desde el archivo JSON
     loadGraph(filename);
     
-    // Ahora obtenemos los parques desde el DAO para asociarlos a los vértices
+    // Ahora obtenemos los hoteles desde el DAO para asociarlos a los vértices
     cargarModelosDesdeDao(); 
 
     clearEdges();  // Función para borrar las adyacencias
@@ -196,9 +196,9 @@ public abstract class graph {
                 randomVertex = random.nextInt(this.nro_vertices()) + 1;
             }
 
-            // Obtenemos los modelos de los parques correspondientes a los vértices
-            Parques modelFrom = vertexModels.get(i);
-            Parques modelTo = vertexModels.get(randomVertex);
+            // Obtenemos los modelos de los hoteles correspondientes a los vértices
+            Hoteles modelFrom = vertexModels.get(i);
+            Hoteles modelTo = vertexModels.get(randomVertex);
 
             // Calculamos un peso aleatorio (o puedes usar el método calcularDistancia si ya tienes coordenadas)
             float weight = (float) calcularDistancia(modelFrom, modelTo);  // Peso aleatorio entre 0 y 100
@@ -212,7 +212,7 @@ public abstract class graph {
 }
 
     // Método para agregar un vértice con su modelo asociado
-    public void addVertexWithModel(Integer vertexId, Parques model) {
+    public void addVertexWithModel(Integer vertexId, Hoteles model) {
         vertexModels.put(vertexId, model);  // Asociar el vértice con su modelo
     }
 
@@ -222,18 +222,18 @@ public abstract class graph {
         return file.exists();
     }
 
-    // Método para calcular la distancia entre dos parques
-    public static double calcularDistancia(Parques parque1, Parques parque2) {
+    // Método para calcular la distancia entre dos hoteles
+    public static double calcularDistancia(Hoteles hotel1, Hoteles hotel2) {
         // Verificar que las coordenadas no sean nulas
-        if (parque1.getLatitud() == null || parque1.getLongitud() == null || 
-            parque2.getLatitud() == null || parque2.getLongitud() == null) {
+        if (hotel1.getLatitud() == null || hotel1.getLongitud() == null || 
+            hotel2.getLatitud() == null || hotel2.getLongitud() == null) {
             return Double.NaN;  // Retorna NaN si alguna coordenada es nula
         }
         // Convertir las coordenadas de grados a radianes
-        double lat1 = toRadians(parque1.getLatitud().doubleValue());
-        double lon1 = toRadians(parque1.getLongitud().doubleValue());
-        double lat2 = toRadians(parque2.getLatitud().doubleValue());
-        double lon2 = toRadians(parque2.getLongitud().doubleValue());
+        double lat1 = toRadians(hotel1.getLatitud().doubleValue());
+        double lon1 = toRadians(hotel1.getLongitud().doubleValue());
+        double lat2 = toRadians(hotel2.getLatitud().doubleValue());
+        double lon2 = toRadians(hotel2.getLongitud().doubleValue());
     
         // Fórmula de Haversine
         double dlat = lat2 - lat1;
